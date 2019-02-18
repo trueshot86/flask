@@ -16,6 +16,72 @@
 <body>
 
 
+<form name="fm">
+	      <div>
+	        <input id="name" type="text" placeholder="Name">
+	      </div>
+	
+	      <div>
+	        <textarea id="contact" placeholder="Contact"></textarea>
+	      </div>
+	
+	      <div>
+	        <button id="send">Send</button>
+	      </div>
+	    </form>
+<div id="result">result</div>
+
+
+
+
+
+<!-- test start -->
+<script>
+
+document.getElementsByTagName('form')[0].addEventListener('submit', function(e) {
+    return e.preventDefault();
+});
+
+
+var sendButton = document.getElementById('send');
+var sendButton2 = document.getElementById('click1');
+sendButton2.addEventListener('click', function() {
+
+    var newName = 'John Smith';
+    xhr = new XMLHttpRequest();
+    
+    xhr.open('POST', '/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    json_data = JSON.stringify({"a":'hage',"b":'boke',"c":'fuga'});
+    xhr.onload = function() {
+        if (xhr.readyState == 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+            console.log(typeof(xhr.responseText));
+            
+            console.log(JSON.parse(xhr.responseText).ResultSet);
+            console.log(typeof(JSON.parse(xhr.responseText).ResultSet));
+
+            console.log(JSON.parse(JSON.parse(xhr.responseText).ResultSet));
+            var ip = JSON.parse(JSON.parse(xhr.responseText).ResultSet).a;
+
+            id1.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + ip + "\">"
+//            alert('Something went wrong.  Name is now ' + xhr.responseText);
+        }
+        else if (xhr.status !== 200) {
+            alert('Request failed.  Returned status of ' + xhr.status);
+        }
+    };
+    xhr.send(json_data);
+
+});
+
+</script>
+<!-- test end -->
+
+
+
+
+
 <!--
 <div class="container text-white">
     <div class="row">
@@ -90,7 +156,7 @@
               </thead>
                   <tr>
                       <th></th>
-                      <td><input type="text" class="form-control" placeholder="192.168.100.xxx"></td>
+                      <td id="id1"><input type="text" class="form-control" placeholder="192.168.100.xxx"></td>
                       <td><input type="text" class="form-control" placeholder="xxx.sv.xc"></td>
                       <td><input type="text" class="form-control" placeholder="sugihara"></td>
                   </tr>
@@ -132,7 +198,7 @@
     <tbody>
         {% for i in range(1,255) %}
 <!-- <a class="btn btn-primary" data-toggle="moddal" href="#myModal"> -->
-        <tr data-toggle="modal" data-id="{{ i }}" data-target="#myModal" style="cursor: pointer;">
+        <tr id="click1" data-toggle="modal" data-id="{{ i }}" data-target="#myModal" style="cursor: pointer;">
             <th></th>
             <td>192.168.100.{{ i }}</td>
             <td>sugihara</td>
@@ -144,6 +210,11 @@
 </table>
 </div>
 
+
+
+
+
+<!-- search start -->
 <script>
 function myFunction() {
   // Declare variables
@@ -172,6 +243,7 @@ function myFunction() {
   }
 }
 </script>
+<!-- search end -->
 
 
 
