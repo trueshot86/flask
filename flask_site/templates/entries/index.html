@@ -47,7 +47,6 @@ var sendButton = document.getElementById('send');
 var sendButton2 = document.getElementById('click1');
 sendButton2.addEventListener('click', function() {
 
-    var newName = 'John Smith';
     xhr = new XMLHttpRequest();
     
     xhr.open('POST', '/', true);
@@ -133,7 +132,7 @@ sendButton2.addEventListener('click', function() {
       </div>
 
       <!-- Modal body -->
-      <form class="form-inline">
+      <form>
       <div class="form-group">
 
       <div class="modal-body">
@@ -201,7 +200,7 @@ sendButton2.addEventListener('click', function() {
         <tr id="click1" data-toggle="modal" data-id="{{ i }}" data-target="#myModal" style="cursor: pointer;">
             <th></th>
             <td>192.168.100.{{ i }}</td>
-            <td>sugihara</td>
+            <td>xxxxxxxx</td>
             <td>:</td>
         </tr>
 <!-- </a> -->
