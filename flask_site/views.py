@@ -5,7 +5,18 @@ import json
 
 @app.route('/')
 def show_entries():
-    return render_template('entries/index.html')
+    dns_dict = {}
+
+    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
+    with engine.connect() as con:
+        rows = con.execute("select * from dns")
+    for i in rows:
+        dns_dict[i[0]] = {"ip": "{}".format(i[1]), "domain": "{}".format(i[2]), "username": "{}".format(i[4])}
+
+#    print(dns_dict)
+#    for i in range(1,255):
+#        dns_dict[i] = {"ip": "192.168.100.{}".format(i)}
+    return render_template('entries/index.html', dns_dict=dns_dict)
 
 @app.route('/', methods=['post'])
 def get_list():
@@ -37,12 +48,24 @@ def update_list():
     print(username)
     print('--- --- --- --- --- ')
 
+
+    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
+    with engine.connect() as con:
+        try:
+            rows = con.execute("update dns set ip = '{}', domain = '{}', username = '{}' where id = '{}' ".format(ip, domain, username, id))
+        except:
+            print('--- --- --- --- --- ')
+            print('update done !!!!!!!!!!!!!!!')
+            print('--- --- --- --- --- ')
+            import traceback
+            traceback.print_exc()
+    print('update done !!!!!!!!!!!!!!!')
+
+
     return jsonify(ResultSet=json.dumps({"a":'aiueo',"b":'kakikukeko'}))
 
-#
-#    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
-#    with engine.connect() as con:
-#        rows = con.execute("update dns set ip = '{}', domain = '{}', username = '{}' ".format(ip, domain, username))
+
+
 
 
 
