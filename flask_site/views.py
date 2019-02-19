@@ -8,7 +8,7 @@ def show_entries():
     return render_template('entries/index.html')
 
 @app.route('/', methods=['post'])
-def update_list():
+def get_list():
     a = request.json['a']
     b = request.json['b']
     c = request.json['c']
@@ -22,4 +22,27 @@ def update_list():
         print(i)
     return_data = {"a":'{}'.format(a), "b":'{}'.format(b), "c":'{}'.format(c)}
     return jsonify(ResultSet=json.dumps(return_data))
+
+@app.route('/apply', methods=['post'])
+def update_list():
+    id = request.json['id']
+    ip = request.json['ip']
+    domain = request.json['domain']
+    username = request.json['username']
+
+    print('--- --- --- --- --- ')
+    print(id)
+    print(ip)
+    print(domain)
+    print(username)
+    print('--- --- --- --- --- ')
+
+    return jsonify(ResultSet=json.dumps({"a":'aiueo',"b":'kakikukeko'}))
+
+#
+#    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
+#    with engine.connect() as con:
+#        rows = con.execute("update dns set ip = '{}', domain = '{}', username = '{}' ".format(ip, domain, username))
+
+
 

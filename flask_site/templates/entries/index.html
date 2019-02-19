@@ -33,19 +33,86 @@
 
 
 
+<script>
+const fp = (e, n) => {
+  while (e) {
+    if (e.tagName === n) break;
+    e = e.parentNode;
+  }
+  return e;
+}
+
+document.addEventListener ('click', e => {
 
 
+  let input_tag = fp (e.target, 'INPUT');
+  if (input_tag){
+    return;
+  }
+  let form_hage = fp (e.target, 'FORM');
+  if (form_hage){
+    if (form_hage.name == "hage"){
+      return;
+    }
+  }
+  
+
+  let tr = fp (e.target, 'TR');
+  if (!tr) {
+    return;
+  }
+
+  if (tr)
+    console.log (tr);
+    console.log (tr.id);
+    xhr = new XMLHttpRequest();
+
+    xhr.open('POST', '/', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    json_data = JSON.stringify({"a":'hage',"b":'boke',"c":'fuga'});
+    var domainNum = document.getElementById('domain' + tr.id).textContent;
+    var usernameNum = document.getElementById('username' + tr.id).textContent;
+    xhr.onload = function() {
+        if (xhr.readyState == 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+            console.log(typeof(xhr.responseText));
+
+            console.log(JSON.parse(xhr.responseText).ResultSet);
+            console.log(typeof(JSON.parse(xhr.responseText).ResultSet));
+
+            console.log(JSON.parse(JSON.parse(xhr.responseText).ResultSet));
+            var ip = JSON.parse(JSON.parse(xhr.responseText).ResultSet).a;
+
+            id1.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + "192.168.100." + tr.id + "\">"
+            id2.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + domainNum + "\">"
+            id3.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + usernameNum + "\">"
+            id4.innerHTML = "<button id=\"" +  tr.id + "\" onclick=\"form_submit(this.id)\" type=\"button\" class=\"btn btn-success\" data-dismiss=\"modal\">Apply</button>"
+//            alert('Something went wrong.  Name is now ' + xhr.responseText);
+        }
+        else if (xhr.status !== 200) {
+            alert('Request failed.  Returned status of ' + xhr.status);
+        }
+    };
+    xhr.send(json_data);
+}, false);
+
+
+</script>
+
+
+/*
 <!-- test start -->
 <script>
+
 
 document.getElementsByTagName('form')[0].addEventListener('submit', function(e) {
     return e.preventDefault();
 });
 
 
+
 var sendButton = document.getElementById('send');
-var sendButton2 = document.getElementById('click1');
-sendButton2.addEventListener('click', function() {
+sendButton.addEventListener('click', function() {
 
     xhr = new XMLHttpRequest();
     
@@ -76,6 +143,7 @@ sendButton2.addEventListener('click', function() {
 
 </script>
 <!-- test end -->
+*/
 
 
 
@@ -132,7 +200,7 @@ sendButton2.addEventListener('click', function() {
       </div>
 
       <!-- Modal body -->
-      <form>
+      <form name="hage" id="search_form" action="/apply" method="post">
       <div class="form-group">
 
       <div class="modal-body">
@@ -156,20 +224,52 @@ sendButton2.addEventListener('click', function() {
                   <tr>
                       <th></th>
                       <td id="id1"><input type="text" class="form-control" placeholder="192.168.100.xxx"></td>
-                      <td><input type="text" class="form-control" placeholder="yyyyyyyy"></td>
-                      <td><input type="text" class="form-control" placeholder="xxxxxxxx"></td>
+                      <td id="id2"><input type="text" class="form-control" placeholder="yyyyyyyy"></td>
+                      <td id="id3"><input type="text" class="form-control" placeholder="xxxxxxxx"></td>
                   </tr>
           </table>
       </div>
 
       </div>
-      </form>
 
       <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success" data-dismiss="modal">Apply</button>
+      <div id="id4" class="modal-footer">
+          <button onclick="form_submit(this.id)" type="button" class="btn btn-success" data-dismiss="modal">Apply</button>
       </div>
+      </form>
+
+<!-- modal form submit start -->
+<script>
+function form_submit(arg){
+//    document.getElementById("search_form").submit();
+    xhr2 = new XMLHttpRequest();
+
+    xhr2.open('POST', '/apply', true);
+    xhr2.setRequestHeader('Content-Type', 'application/json');
+    json_data = JSON.stringify({"id":arg, "ip":'192.168.100.boke',"domain":'oreno.xc',"username":'system_admin'});
+    xhr2.onload = function() {
+        if (xhr2.readyState == 4 && xhr2.status === 200) {
+            console.log(xhr2.responseText);
+            console.log(typeof(xhr2.responseText));
+
+            console.log(JSON.parse(xhr2.responseText).ResultSet);
+            console.log(typeof(JSON.parse(xhr2.responseText).ResultSet));
+
+            console.log(JSON.parse(JSON.parse(xhr2.responseText).ResultSet));
+            var ip = JSON.parse(JSON.parse(xhr2.responseText).ResultSet).a;
+
+            result.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + ip + "\">"
+//            alert('Something went wrong.  Name is now ' + xhr2.responseText);
+        }
+        else if (xhr2.status !== 200) {
+            alert('Request failed.  Returned status of ' + xhr2.status);
+        }
+    };
+    xhr2.send(json_data);
+
+}
+</script>
+<!-- modal form submit end -->
 
 
     </div>
@@ -197,11 +297,11 @@ sendButton2.addEventListener('click', function() {
     <tbody>
         {% for i in range(1,255) %}
 <!-- <a class="btn btn-primary" data-toggle="moddal" href="#myModal"> -->
-        <tr id="click1" data-toggle="modal" data-id="{{ i }}" data-target="#myModal" style="cursor: pointer;">
+        <tr id="{{ i }}" data-toggle="modal" data-id="{{ i }}" data-target="#myModal" style="cursor: pointer;">
             <th></th>
             <td>192.168.100.{{ i }}</td>
-            <td>xxxxxxxx</td>
-            <td>:</td>
+            <td id="domain{{ i }}">xxxxxxxx</td>
+            <td id="username{{ i }}">:</td>
         </tr>
 <!-- </a> -->
         {% endfor %}
