@@ -62,7 +62,8 @@ def update_list():
     print('update done !!!!!!!!!!!!!!!')
 
 
-    return jsonify(ResultSet=json.dumps({"a":'aiueo',"b":'kakikukeko'}))
+    return jsonify(ResultSet=json.dumps({"a" :id, "b": 'yabai'}))
+#    return jsonify(ResultSet=json.dumps({"id": id, "ip": ip, "domain": domain, "username": username}))
 
 
 

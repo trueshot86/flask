@@ -267,7 +267,7 @@ function form_submit(arg){
     xhr2.open('POST', '/apply', true);
     xhr2.setRequestHeader('Content-Type', 'application/json');
 //    json_data = JSON.stringify({"id":arg, "ip":'192.168.100.boke',"domain":'oreno.xc',"username":'system_admin'});
-    json_data = JSON.stringify({"id":arg, "ip": post_ip2 || post_ip,"domain": post_domain2 || post_domain,"username":'system_admin'});
+    json_data = JSON.stringify({"id":arg, "ip": post_ip2 || post_ip,"domain": post_domain2 || post_domain,"username": post_username2 || post_username});
     xhr2.onload = function() {
         if (xhr2.readyState == 4 && xhr2.status === 200) {
             console.log(xhr2.responseText);
@@ -277,9 +277,10 @@ function form_submit(arg){
             console.log(typeof(JSON.parse(xhr2.responseText).ResultSet));
 
             console.log(JSON.parse(JSON.parse(xhr2.responseText).ResultSet));
-            var ip = JSON.parse(JSON.parse(xhr2.responseText).ResultSet).a;
+            var return_ip = JSON.parse(JSON.parse(xhr2.responseText).ResultSet).a;
 
-            result.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + ip + "\">"
+            result.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + return_ip + "\">"
+//            result.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + ip + "\">"
 //            alert('Something went wrong.  Name is now ' + xhr2.responseText);
         }
         else if (xhr2.status !== 200) {
