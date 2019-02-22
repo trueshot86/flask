@@ -1,4 +1,4 @@
-from flask_site import app
+from flask_site import app, socketio
 
 if __name__ == '__main__':
-    app.run(debug=True,port=3000,host='172.17.0.7')
+    socketio.run(app,debug=True,port=3000,host='172.17.0.2')

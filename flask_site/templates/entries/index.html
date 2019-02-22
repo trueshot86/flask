@@ -14,7 +14,7 @@
 </head>
 
 <body>
-
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 
 <form name="fm">
 	      <div>
@@ -381,7 +381,15 @@ function myFunction() {
 <!-- search end -->
 
 
+<script>
+//var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+var socket = io.connect('http://' + '192.168.100.123' + ':' + '10080');
 
+socket.on('some event', function(msg) {
+    console.log('chat--------------------------------------------------')
+    result.innerHTML=msg.data;
+});
+</script>
 
 
 <!-- jQuery、Popper.js、Bootstrap JS -->

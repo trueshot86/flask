@@ -1,7 +1,8 @@
 from flask import request, redirect, url_for, render_template, flash, session, jsonify
-from flask_site import app
+from flask_site import app, socketio
 from sqlalchemy import create_engine
 import json
+from flask_socketio import send, emit
 
 @app.route('/')
 def show_entries():
@@ -66,7 +67,8 @@ def update_list():
     return jsonify(ResultSet=json.dumps({"id": id, "ip": ip, "domain": domain, "username": username}))
 
 
-
-
-
+@app.route('/chat', methods=['post'])
+def hage():
+    socketio.emit('some event', {'data': 42})
+    return 'chat test'
 
