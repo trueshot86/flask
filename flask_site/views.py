@@ -61,14 +61,38 @@ def update_list():
             import traceback
             traceback.print_exc()
     print('update done !!!!!!!!!!!!!!!')
+    modal_form(id, ip, domain, username)
+    not_modal_form(id, domain, username)
 
 
 #    return jsonify(ResultSet=json.dumps({"a" :id, "b": 'yabai'}))
     return jsonify(ResultSet=json.dumps({"id": id, "ip": ip, "domain": domain, "username": username}))
+
+@app.route('/clear', methods=['post'])
+def clear_form():
+    ip = ""
+    id = request.json['id']
+    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
+    with engine.connect() as con:
+        rows = con.execute("update dns set domain = '', username = '' where id = {}".format(id))
+        rows2 = con.execute("select ip from dns where id = {}".format(id))
+    for i in rows2:
+        ip = i[0]
+    modal_form(id, ip, '', '')
+    not_modal_form(id, '', '')
+    return 'delete success'
 
 
 @app.route('/chat', methods=['post'])
 def hage():
     socketio.emit('some event', {'data': 42})
     return 'chat test'
+
+def modal_form(id, ip, domain, username):
+    socketio.emit('modal_form', {'id': id, 'ip': id, 'domain': domain, 'username': username})
+    return 'modal_form success!'
+
+def not_modal_form(id, domain, username):
+    socketio.emit('not_modal_form', {'id': id, 'domain': domain, 'username': username})
+    return 'not_modal_form success!'
 
