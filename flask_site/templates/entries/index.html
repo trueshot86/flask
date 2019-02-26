@@ -10,17 +10,63 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style type="text/css">
+html,body {
+    margin:0px;
+    padding: 0px;
+    height: 100%;
+}
+body {
+    background:#fff;
+    _overflow: hidden;
+}
+div#foo {
+    position:fixed;
+    left: 55%;
+    top: 50%;
+/*    border: 1px solid blue; */
+    border: none;
+    _position: absolute;
+/*    width: 160px; */
+    width: 16px;
+/*    height: 120px; */
+    height: 12px;
+/*    margin-left: -80px; */
+    margin-left: -80px; 
+/*    margin-top: -60px; */
+    margin-top: -60px;
+}
+</style>
 
 </head>
 
-<body>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 
-{% for message in get_flashed_messages() %}
-<div class="alert alert-info" role="alert">
-    {{ message }}
-</div>
-{% endfor %}
+<body style="display">
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
+
+<div id="foo" style="display:none"></div>
+
+    <script>
+        var opts = {
+            lines: 20, // The number of lines to draw
+            length: 30, // The length of each line
+            width: 10, // The line thickness
+            radius: 40, // The radius of the inner circle
+            corners: 1, // Corner roundness (0..1)
+            rotate: 0, // The rotation offset
+            color: '#5cb85c', // #rgb or #rrggbb #5cb85c #000
+            speed: 1, // Rounds per second
+            trail: 60, // Afterglow percentage
+            shadow: false, // Whether to render a shadow
+            hwaccel: false, // Whether to use hardware acceleration
+            className: 'spinner', // The CSS class to assign to the spinner
+            zIndex: 2e9, // The z-index (defaults to 2000000000)
+            top: 25, // Top position relative to parent in px
+            left: 25 // Left position relative to parent in px
+        };
+    </script>
 
 <!--
 <form name="fm">
@@ -344,12 +390,26 @@ function form_submit(arg){
 
     xhr2 = new XMLHttpRequest();
 
+        var target = document.getElementById('foo');
+        target.style.display = ""
+        var spinner = new Spinner(opts).spin(target);
+
     xhr2.open('POST', '/apply', true);
+    xhr2.addEventListener("progress", function(ev) {
+        var p = (ev.lengthComputable==false)? 0: ev.loaded/ev.total*100;
+        console.log(p+"%");
+        spinner.stop();
+        target.style.display = "none"
+    
+    });
     xhr2.setRequestHeader('Content-Type', 'application/json');
 //    json_data = JSON.stringify({"id":arg, "ip":'192.168.100.boke',"domain":'oreno.xc',"username":'system_admin'});
     json_data = JSON.stringify({"id":arg, "ip": post_ip2 || post_ip,"domain": post_domain2 || post_domain,"username": post_username2 || post_username});
     xhr2.onload = function() {
         if (xhr2.readyState == 4 && xhr2.status === 200) {
+            if (xhr2.responseText == 'hage') {
+                alert('hage return Someone is using at same time. or System error. plz try one more.')
+            }else {
             console.log(xhr2.responseText);
             console.log(typeof(xhr2.responseText));
 
@@ -366,10 +426,12 @@ function form_submit(arg){
             document.getElementById('username' + return_id).textContent = return_username;
 //            domain2.innerHTML = "<input type=\"text\" class=\"form-control\" placeholder=\"" + ip + "\">"`
 //            alert('Something went wrong.  Name is now ' + xhr2.responseText);
+            }
         }
         else if (xhr2.status !== 200) {
             console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww');
-            alert('Request failed.  Returned status of ' + xhr2.status);
+//            alert('Request failed.  Returned status of ' + xhr2.status);
+            alert('Someone is using at same time. or System error. plz try one more.')
         }
     };
     xhr2.send(json_data);
