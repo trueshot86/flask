@@ -16,6 +16,12 @@
 <body>
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 
+{% for message in get_flashed_messages() %}
+<div class="alert alert-info" role="alert">
+    {{ message }}
+</div>
+{% endfor %}
+
 <!--
 <form name="fm">
 	      <div>
@@ -85,7 +91,12 @@ document.addEventListener ('click', e => {
             console.log(JSON.parse(JSON.parse(xhr.responseText).ResultSet));
             var ip = JSON.parse(JSON.parse(xhr.responseText).ResultSet).a;
 
-            id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.100." + tr.id + "\" readonly=\"readonly\">"
+            if (tr.id < 255) {
+                id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.100." + tr.id + "\" readonly=\"readonly\">"
+            }else {
+                ip_2 = Number(tr.id) - 254
+                id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.2." + ip_2 + "\" readonly=\"readonly\">"
+            }
             id2.innerHTML = "<input type=\"text\" name=\"hage_domain\" onInput=\"checkForm(this)\" class=\"form-control\" placeholder=\"" + domainNum + "\">"
             id3.innerHTML = "<input type=\"text\" name=\"hage_username\" onInput=\"checkForm(this)\" class=\"form-control\" placeholder=\"" + usernameNum + "\">"
             id4.innerHTML = "<button id=\"" + tr.id + "\" onclick=\"delete_placeholder(this.id)\" type=\"button\" class=\"btn btn-danger\" data-dismiss=\"modal\">Clear</button><button id=\"" +  tr.id + "\" onclick=\"form_submit(this.id)\" type=\"button\" class=\"btn btn-success\" data-dismiss=\"modal\">Apply</button>"
@@ -194,9 +205,10 @@ function reflesh_search() {
 <script>
 function checkForm($this) {
     var str = $this.value;
-    while(str.match(/[^A-Z^a-z^\d\-\.\s]/)) {
-        str = str.replace(/[^A-Z^a-z^\d\-\.]/, "");
+    while(str.match(/[^a-z^\d^\.^\-]/)) {
+        str = str.replace(/[^a-z^\d^\.^\-]/, "");
     }
+    str = str.replace(/[\.\.]/, ".");
     $this.value = str;
 }
 </script>
@@ -208,17 +220,21 @@ function checkForm($this) {
   Open modal
 </button>
 -->
-<button onclick="show100()" type="button" class="btn btn-primary" style="width:150px">192.168.100.0/24</button>
-<button onclick="show2()" type="button" class="btn btn-primary" style="width:150px">192.168.2.0/24</button>
+<button id="button100" onclick="show100()" type="button" class="btn btn-primary" style="width:150px">192.168.100.0/24</button>
+<button id="button2" onclick="show2()" type="button" class="btn btn-lightdark" style="width:150px">192.168.2.0/24</button>
 
 <script>
 function show100() {
     document.getElementById('myTable').style.display = "";
     document.getElementById('myTable2').style.display = "none";
+    document.getElementById('button100').className ="btn btn-primary"
+    document.getElementById('button2').className ="btn btn-lightdark"
 }
 function show2() {
     document.getElementById('myTable').style.display = "none";
     document.getElementById('myTable2').style.display = "";
+    document.getElementById('button2').className ="btn btn-primary"
+    document.getElementById('button100').className ="btn btn-lightdark"
 }
 </script>
 
@@ -314,6 +330,7 @@ function form_submit(arg){
     var post_username = document.getElementById('id3').getElementsByTagName('input')[0].getAttribute("placeholder");
     var post_username2 = document.hage.hage_username.value;
 
+    console.log(arg)
     console.log('111111111111111111111111111111111111111111111')
     console.log(post_ip)
     console.log(post_ip2)
@@ -351,6 +368,7 @@ function form_submit(arg){
 //            alert('Something went wrong.  Name is now ' + xhr2.responseText);
         }
         else if (xhr2.status !== 200) {
+            console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww');
             alert('Request failed.  Returned status of ' + xhr2.status);
         }
     };
@@ -463,6 +481,31 @@ function myFunction() {
       }
     }
   }
+  var input, filter, table, tr, td, i, txtValue, td_length;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("myTable2");
+  tr = table.getElementsByTagName("tr");
+  td_len = myTable.rows[0].cells.length - 1;
+  console.log(td_len)
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    for (j = 0; j < td_len; j++) {
+      td = tr[i].getElementsByTagName("td")[j];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break;
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+
+
 }
 </script>
 <!-- search end -->
@@ -480,7 +523,12 @@ socket.on('some event', function(msg) {
 
 socket.on('modal_form', function(data) {
     if (document.getElementById('id4').getElementsByTagName('button')[0].getAttribute('id') == data.id) {
-        id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.100." + data.ip + "\" readonly=\"readonly\">"
+        if (data.id < 254) {
+            id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.100." + data.ip + "\" readonly=\"readonly\">"
+        }else {
+            ip_2 = Number(data.id) - 254
+            id1.innerHTML = "<input type=\"text\" name=\"hage_ip\" class=\"form-control\" placeholder=\"" + "192.168.2." + ip_2 + "\" readonly=\"readonly\">"
+        }
         id2.innerHTML = "<input type=\"text\" name=\"hage_domain\" onInput=\"checkForm(this)\" class=\"form-control\" placeholder=\"" + data.domain + "\">"
         id3.innerHTML = "<input type=\"text\" name=\"hage_username\" onInput=\"checkForm(this)\" class=\"form-control\" placeholder=\"" + data.username + "\">"
     }
@@ -505,9 +553,49 @@ window.onkeydown = function(e) {
         document.getElementById('close').click();
         console.log( 'escape pressed' );
     }
+//    if (e.keyCode == 13) {
+//        console.log('---------')
+//        console.log('---------')
+//        console.log(document.getElementsByClassName('modal-footer')[0].getAttribute('id'))
+//        modal_id = document.getElementsByClassName('modal-footer')[0].getAttribute('id')
+//        var pattern = /\d/;
+//        var flag = pattern.test(document.getElementById(modal_id).getElementsByTagName('button')[0].id)
+//        console.log(flag)
+//        if (flag) {
+//            document.getElementsByClassName('btn-success')[0].click()
+//        }
+//        console.log('enter key')
+//        document.getElementById(modal_id).getElementsByTagName('button')[0].id = ""
+//        
+//    }
 };
 </script>
 
+<script>
+window.addEventListener('DOMContentLoaded', function(e){
+  [].forEach.call(document.querySelectorAll('#search_form'),function(x){
+    x.addEventListener('keydown',function(e){
+    var current_Ele = document.activeElement;
+//    console.log(current_Ele)
+//    console.log(current_Ele.getAttribute('id'))
+//    console.log(current_Ele.getAttribute('class'))
+//    console.log(current_Ele.textContent)
+      if(current_Ele.textContent == "Apply"){
+        return;
+      }
+      if(e.keyCode==13){
+        document.getElementsByClassName('btn-success')[0].click()
+      }
+    });
+  });
+  document.querySelector(".btn.btn-success").addEventListener('click',function(e){
+    console.log('okokokokokokokokokokokokokokokokokokoko');
+  });
+//  document.querySelector('#cancel').addEventListener('click',function(e){
+//    console.log('cancel');
+//  });
+});
+</script>
 
 <!-- jQuery、Popper.js、Bootstrap JS -->
 

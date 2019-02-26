@@ -37,6 +37,9 @@ def get_list():
 
 @app.route('/apply', methods=['post'])
 def update_list():
+    flash('this is flash test')
+##    make_lock()
+##    lock_flag = check_lock()
     id = request.json['id']
     ip = request.json['ip']
     domain = request.json['domain']
