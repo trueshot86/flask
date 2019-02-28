@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 import json
 from flask_socketio import send, emit
 import subprocess
+import textwrap
 
 @app.route('/')
 def show_entries():
@@ -104,7 +105,28 @@ def delete_lock(arg):
     
 
 def update_dns():
-    subprocess.run('ssh 192.168.100.53 "touch hage"', shell=True)
+    array_ip = []
+    array_domain = []
+    bakayarou = ['aiueo','kakikukeko','sasisuseso']
+    engine = create_engine('mysql://root:pass@localhost/infra?charset=utf8mb4')
+    with engine.connect() as con:
+        rows = con.execute("select ip, domain from dns where domain != ''")
+    for i in rows:
+        array_ip.append(i[0])
+        array_domain.append(i[1])
+    print(array_ip)
+    print(array_domain)
+    msg = textwrap.dedent('''
+            local-data:     {}
+            local-data-ptr: {}
+    ''').format('boke','aho')
+    
+#    subprocess.run('ssh 192.168.100.53 "echo \'server:\' > /tmp/hage; for i in {};do echo \'    \"local-data:        \'   \' \\"yamaha-rtx.xc. IN A 192.168.100.\\$i\\"\"\' >> /tmp/hage; echo \'    \"local-data-ptr: \\"192.168.100.1 yamaha-rtx.xc\\"\"\' >> /tmp/hage; done\"'.format(array_ip), shell=True)
+
+    subprocess.run('ssh 192.168.100.53 "echo \'server:\' > /tmp/hage; declare -a array=({}); j=0; for i in {};do  echo \'    \'local-data:\'     \'\${{array[\$j]}} IN A \$i boke2 >> /tmp/annie; j=\$((\$j + 1));done"'.format(' '.join(map(str, array_domain)), ' '.join(map(str, array_ip)), bakayarou), shell=True)
+
+#    subprocess.run('ssh 192.168.100.53 "for i in {};do echo  \'aiueo\' \$i \'kakikukeko\' >> /tmp/annie;done"'.format(array_ip), shell=True)
+
     print('updateeeeeeeeeeeeeeeeeeeeeee')
     
 
