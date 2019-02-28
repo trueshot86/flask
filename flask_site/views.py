@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 import json
 from flask_socketio import send, emit
 import subprocess
-import textwrap
 
 @app.route('/')
 def show_entries():
@@ -116,16 +115,14 @@ def update_dns():
         array_domain.append(i[1])
     print(array_ip)
     print(array_domain)
-    msg = textwrap.dedent('''
-            local-data:     {}
-            local-data-ptr: {}
-    ''').format('boke','aho')
     
-#    subprocess.run('ssh 192.168.100.53 "echo \'server:\' > /tmp/hage; for i in {};do echo \'    \"local-data:        \'   \' \\"yamaha-rtx.xc. IN A 192.168.100.\\$i\\"\"\' >> /tmp/hage; echo \'    \"local-data-ptr: \\"192.168.100.1 yamaha-rtx.xc\\"\"\' >> /tmp/hage; done\"'.format(array_ip), shell=True)
 
-    subprocess.run('ssh 192.168.100.53 "echo \'server:\' > /tmp/hage; declare -a array=({}); j=0; for i in {};do  echo \'    \'local-data:\'     \'\${{array[\$j]}} IN A \$i boke2 >> /tmp/annie; j=\$((\$j + 1));done"'.format(' '.join(map(str, array_domain)), ' '.join(map(str, array_ip)), bakayarou), shell=True)
+    subprocess.run('ssh 192.168.100.53 "echo \'server:\' > /etc/unbound/unbound.conf.d/route53.conf; declare -a array=({}); j=0; for i in {};do  echo \'    \'\\"local-data:      \${{array[\$j]}}. IN A \$i\n    local-data-ptr:  \$i \${{array[\$j]}}\\" >> /etc/unbound/unbound.conf.d/route53.conf; j=\$((\$j + 1));done;"'.format(' '.join(map(str, array_domain)), ' '.join(map(str, array_ip)), bakayarou), shell=True)
 
-#    subprocess.run('ssh 192.168.100.53 "for i in {};do echo  \'aiueo\' \$i \'kakikukeko\' >> /tmp/annie;done"'.format(array_ip), shell=True)
+    cmd1 = '"sed -i -e \'s/$/\\"/\' -e \'s/\\s/\\"/10\' -e \'/local-data-ptr/s/\\s/\\"/6\' -e \'/server:/s/\\"//\' /etc/unbound/unbound.conf.d/route53.conf; systemctl reload unbound"'
+    cmd = 'ssh 192.168.100.53 %s' % cmd1
+    subprocess.run(cmd, shell=True)
+
 
     print('updateeeeeeeeeeeeeeeeeeeeeee')
     
@@ -140,6 +137,7 @@ def clear_form():
         rows2 = con.execute("select ip from dns where id = {}".format(id))
     for i in rows2:
         ip = i[0]
+    update_dns()
     modal_form(id, ip, '', '')
     not_modal_form(id, '', '')
     return 'delete success'

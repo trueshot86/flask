@@ -369,15 +369,26 @@ function delete_placeholder(arg) {
     xhr3.open('POST', '/clear', true);
     xhr3.setRequestHeader('Content-Type', 'application/json');
     json_data = JSON.stringify({"id": arg});
-    xhr.onload = function() {
+    xhr3.onload = function() {
         if (xhr.readyState == 4 && xhr.status === 200) {
+            spinner.stop();
             console.log('clear success');
+            bodyScrollLock.enableBodyScroll('body');
+            opai2();
         }
         else if (xhr.status !== 200) {
             alert('Request failed.  Returned status of ' + xhr.status);
+            spinner.stop();
+            bodyScrollLock.enableBodyScroll('body');
+            opai2();
         }
     };
     xhr3.send(json_data);
+    var target = document.getElementById('foo');
+    target.style.display = ""
+    var spinner = new Spinner(opts).spin(target);
+    bodyScrollLock.disableBodyScroll('body');
+    opai();
 }
 
 </script>
